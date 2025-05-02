@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import api from '../utils/api';
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
@@ -29,16 +30,8 @@ const ChatBox = () => {
     setIsLoading(true);
 
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch('http://localhost:8080/user/api/groq', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content: inputMessage }),
-      });
-      console.log(response);
-      const data = await response.text();
+      const response = await api.post('/user/api/groq', { content: inputMessage });
+      const data = response.data;
       
       // Add AI response to chat
       const aiMessage = {

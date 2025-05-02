@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [loginMethod, setLoginMethod] = useState('credentials'); // 'credentials' or 'otp'
   
   // Credentials login state
@@ -42,8 +44,8 @@ const Login = () => {
         const token = await response.text();
         console.log('Received token:', token);
 
-        // Store JWT token in localStorage
-        localStorage.setItem('token', token);
+        // Use the global auth context to handle login
+        login(token, credentials.username);
         
         // Show success toast
         toast.success('Login successful!');

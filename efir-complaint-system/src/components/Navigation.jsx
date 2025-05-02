@@ -7,16 +7,23 @@ const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     // Check if token exists in localStorage
     const token = localStorage.getItem('token');
+    const storedUsername = localStorage.getItem('username');
     setIsAuthenticated(!!token);
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
     setIsAuthenticated(false);
+    setUsername('');
     toast.success('Logged out successfully');
     navigate('/');
   };
@@ -61,6 +68,7 @@ const Navigation = () => {
                     Dashboard
                   </Link>
                 )}
+                <span className="text-gray-600 font-medium">Hello, {username}</span>
                 <button
                   onClick={handleLogout}
                   className="bg-purple-600 text-white px-6 py-2 rounded-full font-medium hover:bg-purple-700 transition-colors duration-200"

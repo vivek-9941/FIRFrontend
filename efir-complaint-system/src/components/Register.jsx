@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import logo from '../assets/image.png'; 
+import logo from '../assets/image.png';
+import api from '../utils/api';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -50,11 +50,7 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8080/user/register', formData, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await api.post('/user/register', formData);
 
       if (response.status === 200) {
         setSuccessMessage('Registration successful! Redirecting to login...');
