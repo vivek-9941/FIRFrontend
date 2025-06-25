@@ -2,33 +2,33 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import logo from '../assets/image.png';
+import { useAuth } from '../context/AuthContext';
 
 const Navigation = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { checkAuthStatus} = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState('');
+  const [isOnDashboard, setIsOnDashboard] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Check if token exists in localStorage
-    const token = localStorage.getItem('token');
-    const storedUsername = localStorage.getItem('username');
-    setIsAuthenticated(!!token);
-    if (storedUsername) {
-      setUsername(storedUsername);
-    }
+    const verifyAuth = async () => {
+      const auth = await checkAuthStatus();
+
+      setIsAuthenticated(auth);
+      const data = JSON.parse(localStorage.getItem("user"));
+      setUser(data);
+    };
+    verifyAuth();
+
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    setIsAuthenticated(false);
-    setUsername('');
+    localStorage.removeItem('user');
     toast.success('Logged out successfully');
-    navigate('/');
+    setIsAuthenticated(false);
   };
-
-  const isOnDashboard = location.pathname.startsWith('/dashboard');
 
   return (
     <nav className="bg-white shadow-md">
@@ -54,21 +54,30 @@ const Navigation = () => {
             <Link to="/contact" className="text-gray-600 hover:text-purple-600">
               Contact
             </Link>
+            {isAuthenticated && user?.role === 'POLICE' && (
+              <Link
+                to="/police-dashboard"
+                className="text-gray-600 hover:text-purple-600"
+              >
+                Police Dashboard
+              </Link>
+            )}
+            {isAuthenticated && user?.role === "USER" && (
+              <Link
+                to="/dashboard"
+                className="text-gray-600 hover:text-purple-600"
+              >
+                Dashboard
+              </Link>
+            )}
           </div>
 
           {/* Right side - Auth buttons */}
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <>
-                {!isOnDashboard && (
-                  <Link
-                    to="/dashboard"
-                    className="text-gray-600 hover:text-purple-600 font-medium"
-                  >
-                    Dashboard
-                  </Link>
-                )}
-                <span className="text-gray-600 font-medium">Hello, {username}</span>
+
+                <span className="text-gray-600 font-medium">Hello, {user?.firstName.toUpperCase()}</span>
                 <button
                   onClick={handleLogout}
                   className="bg-purple-600 text-white px-6 py-2 rounded-full font-medium hover:bg-purple-700 transition-colors duration-200"
@@ -83,6 +92,12 @@ const Navigation = () => {
                   className="text-purple-600 hover:text-purple-700 font-medium"
                 >
                   Sign In
+                </Link>
+                <Link
+                  to="/police-login"
+                  className="text-purple-600 hover:text-purple-700 font-medium"
+                >
+                  Police Login
                 </Link>
                 <Link
                   to="/register"
