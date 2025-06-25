@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import logo from '../assets/image.png';
-import api from '../utils/api';
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -18,7 +19,9 @@ const Register = () => {
       state: '',
       zip: '',
       country: ''
-    }
+    },
+    role: "POLICE",
+    verified: false
   });
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
@@ -50,7 +53,7 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const response = await api.post('/user/register', formData);
+      const response = await axios.post('http://localhost:8080/user/register', formData, {headers:{'Authorization': localStorage.getItem('token')}});
 
       if (response.status === 200) {
         setSuccessMessage('Registration successful! Redirecting to login...');
@@ -75,12 +78,15 @@ const Register = () => {
           } else {
             switch (err.response.status) {
               case 208:
+                toast('User already exists.')
                 errorMessage = 'User already exists.';
                 break;
               case 400:
+                toast('Invalid registration data.')
                 errorMessage = 'Invalid registration data.';
                 break;
               default:
+
                 errorMessage = 'Registration failed. Please try again.';
             }
           }
