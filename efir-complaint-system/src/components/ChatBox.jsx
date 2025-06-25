@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import api from '../utils/api';
+import axios from "axios";
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
@@ -30,7 +30,8 @@ const ChatBox = () => {
     setIsLoading(true);
 
     try {
-      const response = await api.post('/user/api/groq', { content: inputMessage });
+
+      const response = await axios.post('http://localhost:8080/user/api/groq', { content: inputMessage } );
       const data = response.data;
       
       // Add AI response to chat
