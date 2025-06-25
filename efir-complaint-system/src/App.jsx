@@ -1,13 +1,17 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Login from './components/Login';
+import PoliceLogin from './components/PoliceLogin';
 import Register from './components/Register';
 import Landing from './components/Landing';
-import UserDashboard from './components/UserDashboard';
+import ComplaintSubmission from './components/DashBoard/ComplaintSubmission.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navigation from './components/Navigation';
 import { AuthProvider } from './context/AuthContext';
+import PoliceDashboard from './components/PoliceDashboard';
 import './App.css'
+import Dashboard from "./components/DashBoard/Dashboard.jsx";
+import Verification from "./components/Verification.jsx";
 
 function App() {
   return (
@@ -33,16 +37,26 @@ function App() {
           }}
         />
         <div className="min-h-screen bg-gray-50">
-          <Navigation />
+
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/police-login" element={<PoliceLogin />} />
             <Route path="/register" element={<Register />} />
+              <Route path="/verification" element={<Verification/>}/>
             <Route
-              path="/dashboard/*"
+              path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <UserDashboard />
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/police-dashboard"
+              element={
+                <ProtectedRoute requiredRole="POLICE">
+                  <PoliceDashboard />
                 </ProtectedRoute>
               }
             />
