@@ -1,10 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ChatBox from './ChatBox';
+import Navigation from "./Navigation.jsx";
+import Footer from "./Footer.jsx";
 
 const Landing = () => {
   return (
     <div className="min-h-[calc(100vh-5rem)] bg-gray-50">
+      <Navigation />
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
@@ -101,6 +104,7 @@ const Landing = () => {
           <ChatBox />
         </div>
       </section>
+      <Footer/>
     </div>
   );
 };
