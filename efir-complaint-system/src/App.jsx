@@ -4,9 +4,7 @@ import Login from './components/Login';
 import PoliceLogin from './components/PoliceLogin';
 import Register from './components/Register';
 import Landing from './components/Landing';
-import ComplaintSubmission from './components/DashBoard/ComplaintSubmission.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
-import Navigation from './components/Navigation';
 import { AuthProvider } from './context/AuthContext';
 import PoliceDashboard from './components/PoliceDashboard';
 import './App.css'
