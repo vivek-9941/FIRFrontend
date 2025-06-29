@@ -1,20 +1,23 @@
+// src/routes/ProtectedRoute.js
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Assuming you have an auth context
+import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
-  const { user, checkAuthStatus } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
-  if (!checkAuthStatus) {
-    // Redirect to login if not authenticated
-    return <Navigate to="/login" replace />;
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
-    // Redirect to home if user doesn't have required role
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (requiredRole && user?.role !== requiredRole) {
     return <Navigate to="/" replace />;
   }
 
   return children;
 };
 
-export default ProtectedRoute; 
+export default ProtectedRoute;
