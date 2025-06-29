@@ -110,7 +110,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 m-2">
       <div className="w-full max-w-6xl flex rounded-2xl shadow-2xl overflow-hidden">
         {/* Left Side - Registration Form */}
         <div className="w-2/3 p-12 bg-white">

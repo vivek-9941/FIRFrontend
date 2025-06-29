@@ -8,6 +8,8 @@ const ComplaintSubmission = () => {
     const navigate = useNavigate();
     const [evidenceLink, setEvidenceLink] = useState('');
     const [hasEvidenceLink, setHasEvidenceLink] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [incidence, setIncidentDetails] = useState({
         date: '',
         time: '',
@@ -125,6 +127,7 @@ const ComplaintSubmission = () => {
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true); // start loading
 
         const formData = {
             victim,
@@ -141,7 +144,7 @@ const ComplaintSubmission = () => {
 
             if (response.status === 200) {
                 // Show success message
-                toast('Complaint submitted successfully!');
+                toast.success('Complaint submitted successfully!');
 
                 // Reset form
                 setVictim({
@@ -189,6 +192,10 @@ const ComplaintSubmission = () => {
         } catch (error) {
             console.error('Error submitting complaint:', error);
             alert('Failed to submit complaint. Please try again.');
+        }
+        finally {
+            setIsSubmitting(false);
+            window.location.reload();
         }
     };
 
@@ -573,10 +580,16 @@ const ComplaintSubmission = () => {
                 <div className="flex justify-center">
                     <button
                         type="submit"
-                        className=" bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                        disabled={isSubmitting}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            isSubmitting
+                                ? "bg-purple-400 cursor-not-allowed"
+                                : "bg-purple-600 hover:bg-purple-700 text-white"
+                        }`}
                     >
-                        Submit Complaint
+                        {isSubmitting ? "Submitting..." : "Submit Complaint"}
                     </button>
+
                 </div>
             </form>
 
