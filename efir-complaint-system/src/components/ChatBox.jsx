@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import axios from "axios";
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -30,9 +30,13 @@ const ChatBox = () => {
     setIsLoading(true);
 
     try {
+      // Simulating API call - replace with your actual API call
+      // const response = await axios.post('http://localhost:8080/user/api/groq', { content: inputMessage } );
+      // const data = response.data;
 
-      const response = await axios.post('http://localhost:8080/user/api/groq', { content: inputMessage } );
-      const data = response.data;
+      // Mock response for demonstration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const data = `This is a mock response to: "${inputMessage}". The actual response would come from your API.`;
 
       // Add AI response to chat
       const aiMessage = {
@@ -53,95 +57,86 @@ const ChatBox = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   return (
-    <div className="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-      {/* Chat Header */}
-      <div className="bg-purple-600 text-white p-6">
-        <h2 className="text-2xl font-bold animate-bounce">AI Assistant</h2>
-        <p className="text-purple-100">Get instant answers to your questions</p>
-      </div>
+      <div className="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        {/* Chat Header */}
+        <div className="bg-purple-600 text-white p-6">
+          <h2 className="text-2xl font-bold animate-bounce">AI Assistant</h2>
+          <p className="text-purple-100">Get instant answers to your questions</p>
+        </div>
 
-      {/* Messages Container */}
-      <div className="h-[400px] overflow-y-auto p-6 space-y-4 bg-gray-50">
-        {messages.length === 0 && (
-          <div className="text-center text-gray-500 py-8">
-            <svg className="w-16 h-16 mx-auto mb-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            <p className="text-lg font-medium">Ask me anything!</p>
-            <p className="text-sm">I'm here to help answer your questions about our complaint system.</p>
-          </div>
-        )}
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div
-              className={`max-w-[80%] p-4 rounded-xl ${
-                message.type === 'user'
-                  ? 'bg-purple-600 text-white rounded-br-none'
-                  : 'bg-white text-gray-800 rounded-bl-none shadow-md'
-              }`}
-            >
-              {message.type === 'user' ? (
-                message.content
-              ) : (
-                <ReactMarkdown
-                  components={{
-                    // Style the root div of markdown content
-                    root: ({ children }) => (
-                      <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0">
-                        {children}
-                      </div>
-                    ),
-                    // This ensures links open in new tab
-                    a: ({ node, ...props }) => (
-                      <a {...props} target="_blank" rel="noopener noreferrer" />
-                    ),
-                  }}
-                >
-                  {message.content}
-                </ReactMarkdown>
-              )}
-            </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-white text-gray-800 p-4 rounded-xl rounded-bl-none shadow-md">
-              <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+        {/* Messages Container */}
+        <div
+            ref={messagesContainerRef}
+            className="h-[400px] overflow-y-auto p-6 space-y-4 bg-gray-50 scroll-smooth"
+        >
+          {messages.length === 0 && (
+              <div className="text-center text-gray-500 py-8">
+                <svg className="w-16 h-16 mx-auto mb-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <p className="text-lg font-medium">Ask me anything!</p>
+                <p className="text-sm">I'm here to help answer your questions about our complaint system.</p>
               </div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+          )}
+          {messages.map((message, index) => (
+              <div
+                  key={index}
+                  className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                    className={`max-w-[80%] p-4 rounded-xl ${
+                        message.type === 'user'
+                            ? 'bg-purple-600 text-white rounded-br-none'
+                            : 'bg-white text-gray-800 rounded-bl-none shadow-md'
+                    }`}
+                >
+                  <div className="whitespace-pre-wrap">{message.content}</div>
+                </div>
+              </div>
+          ))}
+          {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-white text-gray-800 p-4 rounded-xl rounded-bl-none shadow-md">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
+                </div>
+              </div>
+          )}
+        </div>
 
-      {/* Input Form */}
-      <div className="p-6 bg-white border-t">
-        <form onSubmit={handleSubmit} className="flex space-x-4">
-          <input
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Type your message here..."
-            className="flex-1 p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50"
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="px-6 py-4 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-          >
-            Send Message
-          </button>
-        </form>
+        {/* Input Form */}
+        <div className="p-6 bg-white border-t">
+          <div className="flex space-x-4">
+            <input
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message here..."
+                className="flex-1 p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50"
+                disabled={isLoading}
+            />
+            <button
+                onClick={handleSubmit}
+                disabled={isLoading}
+                className="px-6 py-4 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            >
+              Send Message
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
   );
 };
 

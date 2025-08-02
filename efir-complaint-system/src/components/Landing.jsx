@@ -157,7 +157,7 @@ const Landing = () => {
             <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-purple-300 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
           </div>
 
-          <div className="container mx-auto px-4 relative z-10">
+          <div className="container mx-auto px-4 relative z-10 min-h-screen">
             <div className={`text-center mb-12 transition-all duration-800 transform ${
                 chatVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
             }`}>
@@ -167,9 +167,7 @@ const Landing = () => {
                 Get instant answers and guidance 24/7.
               </p>
             </div>
-            <div className={`transition-all duration-1000 transform ${
-                chatVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-12 opacity-0 scale-95'
-            }`} style={{ transitionDelay: '300ms' }}>
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
               <ChatBox />
             </div>
           </div>
