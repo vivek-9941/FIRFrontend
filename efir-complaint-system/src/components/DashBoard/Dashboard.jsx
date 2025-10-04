@@ -4,6 +4,8 @@ import {fetchActiveComplaints} from "../../utils/session.js";
 import MainDashboard from "./MainDashboard.jsx";
 import {useNavigate} from "react-router-dom";
 import Footer from "../Footer.jsx";
+import {decryptAES} from "../../utils/AESEncryption.js";
+import {decryptuser} from "../../context/DecryptionHelper.js";
 
 const Dashboard = () =>{
     const [platform,setplatform] = useState("overview");
@@ -13,8 +15,11 @@ const Dashboard = () =>{
     useEffect(() => {
         const loadData = async () => {
             try {
-                const person = JSON.parse(localStorage.getItem("user"));
+                const encrypted = localStorage.getItem("user");
+                if (encrypted) {
+                const person = decryptuser(JSON.parse(encrypted));
                 setUser(person);
+                }
 
                 if (sessionStorage.getItem("complaints") === null) {
                     await fetchActiveComplaints(); // Wait for the fetch to complete

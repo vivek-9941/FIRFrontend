@@ -1,13 +1,28 @@
 import ComplaintList from "../ComplaintList.jsx";
 import {useEffect, useState} from "react";
+import {decryptAES} from "../../utils/AESEncryption.js";
+import {decryptComplaint} from "../../context/DecryptionHelper.js";
 
 const Complaints = () => {
     const [activeComplaints, setActiveComplaints] = useState([]);
     const [selectedComplaint, setSelectedComplaint] = useState(null);
-    useEffect(() =>{
-        const data = JSON.parse(sessionStorage.getItem("complaints"));
-        setActiveComplaints(data);
-    },[])
+    useEffect(() => {
+        const encrypted = sessionStorage.getItem("complaints");
+        if (encrypted) {
+            let complaintsArr;
+            try {
+                complaintsArr = JSON.parse(encrypted);
+            } catch (e) {
+                complaintsArr = [];
+            }
+            if (Array.isArray(complaintsArr)) {
+                const data = complaintsArr.map(c => decryptComplaint(c));
+                setActiveComplaints(data);
+            } else {
+                setActiveComplaints([]);
+            }
+        }
+    }, []);
     const handleComplaintClick = (complaint) => {
         console.log('Complaint clicked:', complaint);
         setSelectedComplaint(complaint);

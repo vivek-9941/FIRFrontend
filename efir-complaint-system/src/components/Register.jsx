@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import logo from '../assets/image.png';
 import axios from "axios";
 import toast from "react-hot-toast";
+import {encryptAES} from "../utils/AESEncryption.js";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Register = () => {
       zip: '',
       country: ''
     },
-    role: "POLICE",
+    role: "USER",
     verified: false
   });
   const [error, setError] = useState(null);
@@ -46,6 +47,23 @@ const Register = () => {
     }
   };
 
+  const encryptData = async (formdata) => {
+    return{
+      ...formdata,
+      firstName: encryptAES(formdata.firstName),
+      lastName: encryptAES(formdata.lastName),
+      aadharNumber: encryptAES(formdata.aadharNumber),
+      address: {
+        street: encryptAES(formdata.address.street),
+        city: encryptAES(formdata.address.city),
+        state: encryptAES(formdata.address.state),
+        zip: encryptAES(formdata.address.zip),
+        country: encryptAES(formdata.address.country)
+      }
+
+    }
+
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -53,8 +71,8 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8080/user/register', formData, {headers:{'Authorization': localStorage.getItem('token')}});
-
+      const RequestData = await encryptData(formData);
+      const response = await axios.post('http://localhost:8085/user/register', RequestData, {headers:{'Authorization': localStorage.getItem('token')}});
       if (response.status === 200) {
         setSuccessMessage('Registration successful! Redirecting to login...');
         setTimeout(() => {

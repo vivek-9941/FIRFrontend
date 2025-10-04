@@ -1,13 +1,20 @@
-// src/context/AuthContext.js
-import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
-
-const AuthContext = createContext(null);
-
+import {createContext, useContext, useEffect, useState} from "react";
+import {decryptuser} from "./DecryptionHelper.js";
+import axios from "axios";
+import {encryptAES} from "../utils/AESEncryption.js";
+const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
+    const [user, setUser] = useState(() => {
+        const rawUser = localStorage.getItem("user");
+        if (rawUser) {
+            const decrypted = decryptuser(JSON.parse(rawUser));
+            return decrypted;
+        }
+        return null;
+    });
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isLoading, setIsLoading] = useState(true); // start with loading true
+    const [isLoading, setIsLoading] = useState(true);
 
     const checkAuthStatus = (token) => {
         try {
@@ -33,9 +40,12 @@ export const AuthProvider = ({ children }) => {
 
             const isValid = checkAuthStatus(token);
             if (isValid) {
-                const storedUser = JSON.parse(localStorage.getItem("user"));
-                setUser(storedUser);
-                setIsAuthenticated(true);
+                const storedRawUser = localStorage.getItem("user");
+                if (storedRawUser) {
+                    const storedUser = decryptuser(JSON.parse(storedRawUser)); // ❗️Fix: Use decryptuser, not decryptAES directly
+                    setUser(storedUser);
+                    setIsAuthenticated(true);
+                }
             } else {
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
@@ -50,28 +60,28 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (token) => {
         try {
-            const response = await axios.get(
-                'http://localhost:8080/user/get?token=' + token,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            console.log("insidelogin");
+
+            const response = await axios.get('http://localhost:8085/user/get?token=' + token, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
             const user = response.data;
-
-            if (response.status === 400 || !user.verified) {
-                return false;
-            }
+            console.log(user);
+            if (response.status === 400 || !user.verified) return false;
 
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
             setUser(user);
             setIsAuthenticated(true);
-            return true;
 
+            return true;
         } catch (error) {
             console.error('Login failed:', error);
             return false;
         }
     };
+
 
     const logout = () => {
         localStorage.removeItem('token');
@@ -89,12 +99,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     if (isLoading) {
-        return <div>Loading...</div>; // Replace with your spinner component if available
+        return <div>Loading...</div>; // Spinner or placeholder
     }
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

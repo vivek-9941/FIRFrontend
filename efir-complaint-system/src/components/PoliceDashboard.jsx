@@ -3,6 +3,8 @@ import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../context/AuthContext';
 import axios from "axios";
 import toast from "react-hot-toast";
+import {decryptAES} from "../utils/AESEncryption.js";
+import {decryptComplaint} from "../context/DecryptionHelper.js";
 
 const PoliceDashboard = () => {
     const [complaints, setComplaints] = useState([]);
@@ -35,13 +37,15 @@ const PoliceDashboard = () => {
                 return;
             }
 
-            const response = await axios.get(`http://localhost:8080/api/police/complaints?pageNumber=${currentPage}&size=${pageSize}`, {
+            const response = await axios.get(`http://localhost:8085/api/police/complaints?pageNumber=${currentPage}&size=${pageSize}`, {
                 headers: {'Authorization': 'Bearer ' + token}
             });
-
-            setComplaints(response.data.complaints);
-            setTotalPages(Math.ceil(response.data.total / pageSize));
+            if(response){
+                const decryptedComplaints = response.data.complaints.map(decryptComplaint);
+                setComplaints(decryptedComplaints);
+                setTotalPages(Math.ceil(response.data.total / pageSize));
             setError(null);
+            }
         } catch (err) {
             if (err.response?.status === 401) {
                 logout();
@@ -56,7 +60,7 @@ const PoliceDashboard = () => {
     };
 
     const display = (complaintid) => {
-        const selectedComplaint = complaints.find(c => c.id === complaintid);
+        const selectedComplaint = decryptAES(complaints.find(c => c.id === complaintid));
         setSelectedcomplaints(selectedComplaint);
     }
 
@@ -64,7 +68,7 @@ const PoliceDashboard = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                `http://localhost:8080/api/police/update?verdict=${newStatus}&id=${complaintId}`,
+                `http://localhost:8085/api/police/update?verdict=${newStatus}&id=${complaintId}`,
                 {},
                 {headers: {Authorization: 'Bearer ' + token}}
             );

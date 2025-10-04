@@ -3,13 +3,13 @@ import {Link, useNavigate} from 'react-router-dom';
 import Footer from '../Footer.jsx';
 import axios from "axios";
 import toast from "react-hot-toast";
+import {encryptComplaint} from "../../context/DecryptionHelper.js";
 
 const ComplaintSubmission = () => {
     const navigate = useNavigate();
     const [evidenceLink, setEvidenceLink] = useState('');
     const [hasEvidenceLink, setHasEvidenceLink] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
     const [incidence, setIncidentDetails] = useState({
         date: '',
         time: '',
@@ -135,11 +135,10 @@ const ComplaintSubmission = () => {
             incidence,
             evidenceLink: hasEvidenceLink ? evidenceLink : null
         };
-
-        console.log('Submitting Complaint:', formData);
-
+        const encrypted = encryptComplaint(formData);
+        console.log('Submitting Complaint:', encrypted);
         try {
-            const response = await axios.post('http://localhost:8080/complaint/save', formData, {headers: {'Authorization': "Bearer " + localStorage.getItem('token')}});
+            const response = await axios.post('http://localhost:8085/complaint/save', encrypted, {headers: {'Authorization': "Bearer " + localStorage.getItem('token')}});
             console.log('Complaint Submission Response:', response.data);
 
             if (response.status === 200) {
@@ -190,6 +189,7 @@ const ComplaintSubmission = () => {
 
             }
         } catch (error) {
+            toast.error(error.message);
             console.error('Error submitting complaint:', error);
             alert('Failed to submit complaint. Please try again.');
         }

@@ -1,11 +1,12 @@
 import axios from "axios";
 import toast from "react-hot-toast";
+import {decryptComplaint} from "../context/DecryptionHelper.js";
 
 export const  fetchActiveComplaints = async () => {
     try {
         console.log('Fetching complaints...');
         const token  = localStorage.getItem("token");
-        const response = await axios.get('http://localhost:8080/complaint/fetch', {headers:{'Authorization':'Bearer '+token }});
+        const response = await axios.get('http://localhost:8085/complaint/fetch', {headers:{'Authorization':'Bearer '+token }});
         console.log('Raw API Response:', response);
         console.log('Fetched Complaints Data:', response.data);
         // Extract complaints array from the correct property or wrap single object
@@ -22,7 +23,8 @@ export const  fetchActiveComplaints = async () => {
             complaintsArray = [];
         }
         toast.success("fetched complains");
-        sessionStorage.setItem('complaints', JSON.stringify(complaintsArray));
+        const decryptedComplaints = complaintsArray.map(decryptComplaint);
+        sessionStorage.setItem('complaints', JSON.stringify(decryptedComplaints));
         return true;
     } catch (error) {
         console.error('Error fetching active complaints:', error);
