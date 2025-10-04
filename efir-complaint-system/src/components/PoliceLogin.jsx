@@ -28,23 +28,21 @@ const {login} = useAuth();
     setIsLoading(true);
 
     try {
-      // Call the login API directly
-      const response = await axios.post('http://localhost:8080/user/login/police', {
+      const response = await axios.post('http://localhost:8085/user/login/police', {
         ...credentials,
-
       });
-
       if (response.status === 200) {
         console.log(response.data)
         const token = response.data;
-        console.log('Received token:', token);
-        const success = await login(token);
-        console.log(1); // Always runs
-        if (success) {
-          console.log(2);
-          toast.success('Login successful!');
-          navigate('/police-dashboard');
-        }
+          const success = await login(token);
+          console.log('Login result:', success); // debug
+
+          if (success) {
+              console.log(2);
+              toast.success('Login successful!');
+              localStorage.setItem('token', token);
+              navigate('/police-dashboard');
+          }
       }
     } catch (error) {
       console.error('Login error:', error);

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import axios from "axios";
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
@@ -31,12 +32,11 @@ const ChatBox = () => {
 
     try {
       // Simulating API call - replace with your actual API call
-      // const response = await axios.post('http://localhost:8080/user/api/groq', { content: inputMessage } );
-      // const data = response.data;
+      const response = await axios.post('http://localhost:8085/ai/api/groq', { content: inputMessage } );
+      const data = response.data;
 
       // Mock response for demonstration
       await new Promise(resolve => setTimeout(resolve, 1000));
-      const data = `This is a mock response to: "${inputMessage}". The actual response would come from your API.`;
 
       // Add AI response to chat
       const aiMessage = {

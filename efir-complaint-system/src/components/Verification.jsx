@@ -15,7 +15,7 @@ const Verification = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/user/sendOtp?email=${encodeURIComponent(email)}`, {
+            const response = await fetch(`http://localhost:8085/user/sendotp?email=${(email)}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ const Verification = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/user/verifyOtp?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`, {
+            const response = await fetch(`http://localhost:8085/user/verifyOtp?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

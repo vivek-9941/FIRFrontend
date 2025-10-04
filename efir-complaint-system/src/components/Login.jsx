@@ -28,7 +28,7 @@ const Login = () => {
         setIsLoading(true);
         try {
             console.log('Attempting login with:', {username: credentials.username});
-            const response = await fetch('http://localhost:8080/user/login', {
+            const response = await fetch('http://localhost:8085/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ const Login = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/user/sendOtp?email=${encodeURIComponent(email)}`, {
+            const response = await fetch(`http://localhost:8085/user/sendOtp?email=${encodeURIComponent(email)}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ const Login = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/user/verifyOtp?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`, {
+            const response = await fetch(`http://localhost:8085/user/verifyOtp?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
